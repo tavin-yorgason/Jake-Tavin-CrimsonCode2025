@@ -1,24 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Accelerometer Test</title>
+  <title>Device Gyroscope Data</title>
 </head>
 <body>
-    <h1>Accelerometer X Data</h1>
-    <p id="accel-x">Waiting for data...</p>
+  <h1>Device Gyroscope Data</h1>
+  <button id="start-button">Allow Access to Sensors</button>
+  <div class="data" id="alpha">Alpha: 0</div>
+  <div class="data" id="beta">Beta: 0</div>
+  <div class="data" id="gamma">Gamma: 0</div>
+  <div class="data" id="gyro-x">Gyroscope X: 0</div>
+  <div class="data" id="gyro-y">Gyroscope Y: 0</div>
+  <div class="data" id="gyro-z">Gyroscope Z: 0</div>
 
-    <script>
-        // Check if the browser supports DeviceMotionEvent
-        if (window.DeviceMotionEvent) {
-            window.addEventListener("devicemotion", function(event) {
-                let accelX = event.accelerationIncludingGravity.x;
-                document.getElementById("accel-x").textContent = "X: " + accelX.toFixed(2);
-            });
-        } else {
-            document.getElementById("accel-x").textContent = "Accelerometer not supported";
-        }
-    </script>
+  <script src = "../static/serve.js"></script>
 </body>
 </html>
