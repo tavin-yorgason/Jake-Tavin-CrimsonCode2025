@@ -9,4 +9,4 @@ def hello_world():
     return render_template('index.html', message="PENIS AND BALLS AND SHAFT")
 
 if __name__ == '__main__':
-    app.run()
+    app.run(ssl_context='adhoc')

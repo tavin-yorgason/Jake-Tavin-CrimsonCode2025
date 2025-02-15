@@ -1,10 +1,24 @@
-<html>
-    <head>
-        <title>Sigma Soulmates Website</title>
-    </head>
-    <body>
-        <h1>{{message}}</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accelerometer Test</title>
+</head>
+<body>
+    <h1>Accelerometer X Data</h1>
+    <p id="accel-x">Waiting for data...</p>
 
-        <script src = "../static/serve.js" charset=""utf-8></script>
-    </body>
+    <script>
+        // Check if the browser supports DeviceMotionEvent
+        if (window.DeviceMotionEvent) {
+            window.addEventListener("devicemotion", function(event) {
+                let accelX = event.accelerationIncludingGravity.x;
+                document.getElementById("accel-x").textContent = "X: " + accelX.toFixed(2);
+            });
+        } else {
+            document.getElementById("accel-x").textContent = "Accelerometer not supported";
+        }
+    </script>
+</body>
 </html>
