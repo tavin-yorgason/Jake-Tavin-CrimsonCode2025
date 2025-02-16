@@ -83,6 +83,20 @@ function draw() {
   requestAnimationFrame(draw);
 }
 
+function resetBall()
+{
+    x = canvas.width / 2;
+    y = canvas.height / 2;
+
+    dx = 2;
+    dy = -2;
+
+    circles.length = 0;
+
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
 // Start the animation
 draw();
 

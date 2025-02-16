@@ -1,12 +1,16 @@
-from flask import Flask
-from flask import render_template
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
 # Root directory
 @app.route('/')
-def hello_world():
-    return render_template('index-with-popup.html', message="PENIS AND BALLS AND SHAFT")
+def index():
+    return render_template('index-with-popup.html')
+
+# Route for sensors page
+@app.route('/sensors')
+def sensors():
+    return render_template('sensors.html')
 
 if __name__ == '__main__':
     app.run(ssl_context='adhoc')
