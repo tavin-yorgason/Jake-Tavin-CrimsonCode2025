@@ -120,11 +120,11 @@ allowButton.addEventListener('click', () => {
         var videoTrack;
         if( vidTracks.length === 0 )
         {
-        console.log("No valid video source");
+          console.log("No valid video source");
         }
         else
         {
-        videoTrack = vidTracks[0];
+          videoTrack = vidTracks[0];
         }
       
         // Get relative volume
@@ -137,7 +137,6 @@ allowButton.addEventListener('click', () => {
             sum += buffer[i];
           }
           audioLevel = sum / bufferLen;
-          console.log(audioLevel);
           //audioDiv.textContent = 'Audio level: ' + audioLevel.toFixed(2);
 
         // Calculate video brightness
@@ -160,17 +159,11 @@ allowButton.addEventListener('click', () => {
 			const pixelBrightness = imageData.data[0]
 								  + imageData.data[1]
 								  + imageData.data[2];
-
 			brightness = imageData.data;
 			})
 		  .catch(error => console.log('Error getting image capture: ' + error));
         }, 10 );
   
-        while( true )
-        {   
-          getAudioData();
-        }   
-        
         // Check for video tracks
       })  
       .catch((err) => {
@@ -354,6 +347,27 @@ window.addEventListener("resize", () => {
 
 // Listen for clicks, and move the ball position to the mouse position
 canvas.addEventListener('click', function(event) {
-    x = event.clientX;
-    y = event.clientY;
-  });
+  x = event.clientX;
+  y = event.clientY;
+});
+
+// Get WASD controls
+window.addEventListener('keydown', function(event) {
+  if(event.key == "w")
+  {
+	beta = -45;
+  }
+  else if(event.key == "a")
+  {
+	gamma = -45;
+  }
+  else if(event.key == "s")
+  {
+	beta = 45;
+  }
+  else if(event.key == "d")
+  {
+	gamma = 45;
+  }
+});
+
