@@ -10,6 +10,10 @@ const audioDiv = document.getElementById('audio');
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
+var noiseSlider = document.getElementById("noiseScaleSlider");
+var speedSlider = document.getElementById("speedSlider");
+var accelSlider = document.getElementById("accelSlider");
+
 // Update window size
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -25,7 +29,7 @@ let dy = -2;
 let beta = 0;
 let gamma = 0;
 
-const MAX_SPEED = 5;
+let MAX_SPEED = 5;
 
 // Scale ball to screen
 let base_radius = Math.min(canvas.width, canvas.height) * 0.04;
@@ -178,12 +182,15 @@ function rgbToHex(r, g, b) {
     return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
 }
 
+let noiseScaling = 3.0;
+let accel = .5;
+
 function draw() {
   colorHex = rgbToHex(brightness[0], brightness[1], brightness[2]);
 
   // Calculate new acceleration
-  acc_y = Normalize(beta, -45, 45, -.5, .5);
-  acc_x = Normalize(gamma, -45, 45, -.5, .5);
+  acc_y = Normalize(beta, -45, 45, -1 * accel, accel);
+  acc_x = Normalize(gamma, -45, 45, -1 * accel, accel);
 
   // Add accel to velocity
   dy += acc_y;
@@ -201,7 +208,7 @@ function draw() {
   }
 
   // Determine size based on sound
-  radius = base_radius + (3 * audioLevel);
+  radius = base_radius + (noiseScaling * audioLevel);
 
   // Clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -307,6 +314,30 @@ function resetBall()
 
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Reset noise slider
+    noiseScaling = 3.0;
+    noiseSlider.value = 3.0;
+
+    // Reset speed slider
+    MAX_SPEED = 5;
+    speedSlider.value = 5;
+
+    // Reset accel slider
+    accel = 0.5;
+    accelSlider.value = .5;
+}
+
+noiseSlider.oninput = function() {
+    noiseScaling = this.value;
+}
+
+speedSlider.oninput = function() {
+    MAX_SPEED = this.value;
+}
+
+accelSlider.oninput = function() {
+    accel = this.value;
 }
 
 draw();
@@ -320,3 +351,9 @@ window.addEventListener("resize", () => {
   x = canvas.width / 2;
   y = canvas.height / 2;
 });
+
+// Listen for clicks, and move the ball position to the mouse position
+canvas.addEventListener('click', function(event) {
+    x = event.clientX;
+    y = event.clientY;
+  });
