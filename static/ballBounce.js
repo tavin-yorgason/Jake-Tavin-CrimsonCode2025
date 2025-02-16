@@ -105,4 +105,7 @@ window.addEventListener("resize", () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   radius = Math.min(canvas.width, canvas.height) * 0.133;
+
+  x = canvas.width / 2;
+  y = canvas.height / 2;
 });

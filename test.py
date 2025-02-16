@@ -12,5 +12,10 @@ def index():
 def sensors():
     return render_template('sensors.html')
 
+# Route for about page
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
 if __name__ == '__main__':
     app.run(ssl_context='adhoc')
