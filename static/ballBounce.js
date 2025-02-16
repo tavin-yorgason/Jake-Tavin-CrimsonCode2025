@@ -178,8 +178,6 @@ function rgbToHex(r, g, b) {
 }
 
 function draw() {
-
-  //colorHex = (Normalize(brightness, 0, 765, 0, 4294967295)).toString(16);
   colorHex = rgbToHex(brightness[0], brightness[1], brightness[2]);
 
   // Calculate new acceleration
