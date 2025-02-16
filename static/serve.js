@@ -5,6 +5,7 @@ const gyroZ = document.getElementById('gyro-z');
 const alphaDiv = document.getElementById('alpha');
 const betaDiv = document.getElementById('beta');
 const gammaDiv = document.getElementById('gamma');
+const audioDiv = document.getElementById('audio');
 
 // Listen for permission button click inside modal
 allowButton.addEventListener('click', () => {
@@ -46,4 +47,55 @@ function startSensors() {
   });
 
   console.log('Sensor tracking started.');
+
+  // Call audio function
+  getLocalStream();
 }
+
+// Get audio input from user
+function getLocalStream() {
+  navigator.mediaDevices
+    .getUserMedia({ video: false, audio: true })
+    .then((stream) => {
+      // Get audio context
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    
+      // Create MediaStreamAudioSourceNode
+      const audioNode = audioContext.createMediaStreamSource(stream);
+
+      // Create analyser node
+      const analyserNode = audioContext.createAnalyser();
+      const bufferLen = analyserNode.frequencyBinCount;
+      analyserNode.fftSize = 256;
+      const buffer = new Uint8Array(bufferLen);
+    
+      // Connect audio node to analyser
+      audioNode.connect(analyserNode);
+    
+      // Get relative volume
+      setInterval( function() {
+        analyserNode.getByteFrequencyData(buffer);
+
+        // Calculate volume
+        let sum = 0;
+        for (let i = 0; i < bufferLen; i++) {
+          sum += buffer[i];
+        }
+        let average = sum / bufferLen;
+        console.log(average);
+        audioDiv.textContent = 'Audio level: ' + average.toFixed(2);
+      }, 100 );
+
+      while( true )
+      {   
+        getAudioData();
+      }   
+      
+	  // Check for video tracks
+    })  
+    .catch((err) => {
+      console.error(`you got an error: ${err}`);
+    }); 
+}
+
+
