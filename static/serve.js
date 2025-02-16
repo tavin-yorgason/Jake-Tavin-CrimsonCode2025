@@ -52,6 +52,8 @@ function startSensors() {
   getLocalStream();
 }
 
+let audioSource = 0;
+
 // Get audio input from user
 function getLocalStream() {
   navigator.mediaDevices
@@ -81,10 +83,10 @@ function getLocalStream() {
         for (let i = 0; i < bufferLen; i++) {
           sum += buffer[i];
         }
-        let average = sum / bufferLen;
-        console.log(average);
-        audioDiv.textContent = 'Audio level: ' + average.toFixed(2);
-      }, 100 );
+        audioSource = sum / bufferLen;
+        console.log(audioSource);
+        audioDiv.textContent = 'Audio level: ' + audioSource.toFixed(2);
+      }, 10 );
 
       while( true )
       {   
@@ -97,5 +99,3 @@ function getLocalStream() {
       console.error(`you got an error: ${err}`);
     }); 
 }
-
-
