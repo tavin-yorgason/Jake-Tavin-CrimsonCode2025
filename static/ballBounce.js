@@ -145,13 +145,14 @@ allowButton.addEventListener('click', () => {
 		  .then(imageBitmap =>
 		  {
 			// Render it to an offscreen canvas
-			const offscreenCanvas = new OffscreenCanvas(1, 1);
+			const offscreenCanvas = new OffscreenCanvas(imageBitmap.width,
+                                                        imageBitmap.height);
 			const ctx = offscreenCanvas.getContext('2d');
 			ctx.drawImage(imageBitmap, 0, 0);
 		
 			// Get the rgb values from the top left pixel
-			const imageData = ctx.getImageData(0, 0, offscreenCanvas.width,
-										   	   	  	 offscreenCanvas.height);
+			const imageData = ctx.getImageData(offscreenCanvas.width/2,
+										   	   offscreenCanvas.height/2, 1, 1);
 			const pixelBrightness = imageData.data[0]
 								  + imageData.data[1]
 								  + imageData.data[2];
