@@ -108,6 +108,19 @@ allowButton.addEventListener('click', () => {
       
         // Connect audio node to analyser
         audioNode.connect(analyserNode);
+
+        /* ----- Video setup ----- */
+        // Get video track
+        const vidTracks = stream.getVideoTracks();
+        var videoTrack;
+        if( vidTracks.length === 0 )
+        {
+        console.log("No valid video source");
+        }
+        else
+        {
+        videoTrack = vidTracks[0];
+        }
       
         // Get relative volume
         setInterval( function() {
@@ -121,6 +134,30 @@ allowButton.addEventListener('click', () => {
           audioLevel = sum / bufferLen;
           console.log(audioLevel);
           audioDiv.textContent = 'Audio level: ' + audioLevel.toFixed(2);
+
+        // Calculate video brightness
+		// Capture an image from the camera
+		const imageCapture = new ImageCapture(videoTrack);
+		
+		// Convert it to a bitmap
+		imageCapture.grabFrame()
+		  .then(imageBitmap =>
+		  {
+			// Render it to an offscreen canvas
+			const offscreenCanvas = new OffscreenCanvas(1, 1);
+			const ctx = offscreenCanvas.getContext('2d');
+			ctx.drawImage(imageBitmap, 0, 0);
+		
+			// Get the rgb values from the top left pixel
+			const imageData = ctx.getImageData(0, 0, offscreenCanvas.width,
+										   	   	  	 offscreenCanvas.height);
+			const pixelBrightness = imageData.data[0]
+								  + imageData.data[1]
+								  + imageData.data[2];
+
+			brightnessDiv.textContent = 'Brightness: ' + pixelBrightness;
+			})
+		  .catch(error => console.log('Error getting image capture: ' + error));
         }, 10 );
   
         while( true )
@@ -171,7 +208,7 @@ function draw() {
     ctx.closePath();
 
     // Fade the circle gradually
-    circles[i].alpha -= 0.01;
+    circles[i].alpha -= 0.001;
 
     // Remove circle if it's fully faded out
     if (circles[i].alpha <= 0) {
@@ -207,11 +244,6 @@ function draw() {
 
   // Bounce if on horizontal bound
   if (x > canvas.width - radius || x < radius) {
-    // Vibrate if device will do it (no iOS)
-    if('vibrate' in navigator)
-    {
-        vibrate(10);
-    }
 
     hitSound.play();
 
@@ -228,11 +260,6 @@ function draw() {
 
   // Bounce if on vertical bound
   if (y > canvas.height - radius || y < radius) {
-    // Vibrate if device will do it
-    if('vibrate' in navigator)
-    {
-        vibrate(10);
-    }
 
     hitSound.play();
 

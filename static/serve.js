@@ -119,7 +119,7 @@ function getLocalStream() {
 								  + imageData.data[1]
 								  + imageData.data[2];
 
-			brightnessDiv.textContent = 'Brightness: ' + pixelBrightness;
+			//brightnessDiv.textContent = 'Brightness: ' + pixelBrightness;
 			})
 		  .catch(error => console.log('Error getting image capture: ' + error));
 	  }, 10 );
