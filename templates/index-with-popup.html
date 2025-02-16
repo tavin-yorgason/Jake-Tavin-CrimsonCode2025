@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Bootstrap Stylesheet -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  
+  <!-- jQuery and Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.bundle.min.js" defer></script>
+
+  <!-- Custom styling -->
+  <style>
+    body {
+      background-color: black;
+      color: white;
+    }
+
+    .modal-content {
+      background-color: black;
+      color: white;
+      border: 2px solid #222;
+    }
+
+    .modal-header, .modal-footer {
+      border-color: #222;
+    }
+
+    .modal-body {
+      background-color: #222;
+    }
+
+    canvas {
+      background: black;
+      display: block;
+      margin: 0 auto;
+    }
+  </style>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Device Gyroscope Data With Popup</title>
+</head>
+
+
+<body>
+  <!-- Temp container to show info on screen -->
+  <div class="container mt-4">
+    <h1>Device Gyroscope Data</h1>
+
+    <!-- <div class="data" id="width">Alpha: 0</div>
+    <div class="data" id="height">Alpha: 0</div> -->
+
+    <div class="data" id="alpha">Alpha: 0</div>
+    <div class="data" id="beta">Beta: 0</div>
+    <div class="data" id="gamma">Gamma: 0</div>
+    <div class="data" id="gyro-x">Gyroscope X: 0</div>
+    <div class="data" id="gyro-y">Gyroscope Y: 0</div>
+    <div class="data" id="gyro-z">Gyroscope Z: 0</div>
+  </div>
+
+  <!-- Bootstrap modal popup for requesting permissions -->
+  <div class="modal fade" id="sensorModal" tabindex="-1" role="dialog" aria-labelledby="sensorModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="sensorModalLabel">Sensor Permission</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          This app requires access to your device's motion sensors. Click "Allow" to proceed.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="allow-sensors">Allow</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="myCanvas"></canvas>
+
+  <!-- Required scripts -->
+  <script src="../static/serve.js"></script>
+  <script src="../static/popup.js"></script>
+  <script src="../static/ballBounce.js"></script>
+</body>
+</html>

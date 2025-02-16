@@ -6,7 +6,7 @@ app = Flask(__name__)
 # Root directory
 @app.route('/')
 def hello_world():
-    return render_template('index.html', message="PENIS AND BALLS AND SHAFT")
+    return render_template('index-with-popup.html', message="PENIS AND BALLS AND SHAFT")
 
 if __name__ == '__main__':
     app.run(ssl_context='adhoc')
