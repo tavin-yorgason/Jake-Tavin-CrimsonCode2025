@@ -6,6 +6,7 @@ const alphaDiv = document.getElementById('alpha');
 const betaDiv = document.getElementById('beta');
 const gammaDiv = document.getElementById('gamma');
 const audioDiv = document.getElementById('audio');
+const brightnessDiv = document.getElementById('brightness');
 
 // Listen for permission button click inside modal
 allowButton.addEventListener('click', () => {
@@ -52,14 +53,13 @@ function startSensors() {
   getLocalStream();
 }
 
-let audioSource = 0;
-
 // Get audio input from user
 function getLocalStream() {
   navigator.mediaDevices
-    .getUserMedia({ video: false, audio: true })
+    .getUserMedia({ video: true, audio: true })
     .then((stream) => {
-      // Get audio context
+      /* ----- Audio Setup ----- */
+	  // Get audio context
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     
       // Create MediaStreamAudioSourceNode
@@ -73,29 +73,59 @@ function getLocalStream() {
     
       // Connect audio node to analyser
       audioNode.connect(analyserNode);
-    
-      // Get relative volume
-      setInterval( function() {
-        analyserNode.getByteFrequencyData(buffer);
 
+	  /* ----- Video setup ----- */
+	  // Get video track
+	  const vidTracks = stream.getVideoTracks();
+	  var videoTrack;
+	  if( vidTracks.length === 0 )
+	  {
+		console.log("No valid video source");
+	  }
+	  else
+	  {
+	    videoTrack = vidTracks[0];
+	  }
+    
+      /* ----- Get audio level and video brightness ----- */
+	  setInterval(function() {
         // Calculate volume
+		analyserNode.getByteFrequencyData(buffer);
+
         let sum = 0;
         for (let i = 0; i < bufferLen; i++) {
           sum += buffer[i];
         }
-        audioSource = sum / bufferLen;
-        console.log(audioSource);
-        audioDiv.textContent = 'Audio level: ' + audioSource.toFixed(2);
-      }, 10 );
-
-      while( true )
-      {   
-        getAudioData();
-      }   
+        let average = sum / bufferLen;
+        audioDiv.textContent = 'Volume: ' + average.toFixed(2);
       
-	  // Check for video tracks
+		// Calculate video brightness
+		// Capture an image from the camera
+		const imageCapture = new ImageCapture(videoTrack);
+		
+		// Convert it to a bitmap
+		imageCapture.grabFrame()
+		  .then(imageBitmap =>
+		  {
+			// Render it to an offscreen canvas
+			const offscreenCanvas = new OffscreenCanvas(1, 1);
+			const ctx = offscreenCanvas.getContext('2d');
+			ctx.drawImage(imageBitmap, 0, 0);
+		
+			// Get the rgb values from the top left pixel
+			const imageData = ctx.getImageData(0, 0, offscreenCanvas.width,
+										   	   	  	 offscreenCanvas.height);
+			const pixelBrightness = imageData.data[0]
+								  + imageData.data[1]
+								  + imageData.data[2];
+
+			brightnessDiv.textContent = 'Brightness: ' + pixelBrightness;
+			})
+		  .catch(error => console.log('Error getting image capture: ' + error));
+	  }, 10 );
     })  
     .catch((err) => {
       console.error(`you got an error: ${err}`);
     }); 
 }
+
