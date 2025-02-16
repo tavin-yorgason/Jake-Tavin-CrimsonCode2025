@@ -1,7 +1,7 @@
 const allowButton = document.getElementById('allow-sensors'); // Changed to modal button
-const gyroX = document.getElementById('gyro-x');
-const gyroY = document.getElementById('gyro-y');
-const gyroZ = document.getElementById('gyro-z');
+const gyroXDiv = document.getElementById('gyro-x');
+const gyroYDiv = document.getElementById('gyro-y');
+const gyroZDiv = document.getElementById('gyro-z');
 const alphaDiv = document.getElementById('alpha');
 const betaDiv = document.getElementById('beta');
 const gammaDiv = document.getElementById('gamma');
@@ -38,13 +38,18 @@ let curColor = "rgb(23, 138, 12)";
 
 let audioLevel = 0;
 
+let gyroX = 0;
+let gyroY = 0;
+let gyroZ = 0;
+
+var hitSound = new Audio("../sounds/hitSound.wav");
+
 // Listen for permission button click inside modal
 allowButton.addEventListener('click', () => {
     if (typeof DeviceOrientationEvent.requestPermission === 'function') {
       DeviceOrientationEvent.requestPermission().then(permissionState => {
         if (permissionState === 'granted') {
           startSensors();
-          screen.lockOrientation("portrain-primary");
         } else {
           alert('Permission denied');
         }
@@ -71,7 +76,8 @@ allowButton.addEventListener('click', () => {
     // Listen for gyroscope data
     window.addEventListener('devicemotion', (event) => {
       if (event.rotationRate.alpha !== null) {
-        gyroX.textContent = 'Gyroscope X: ' + event.rotationRate.alpha.toFixed(2);
+        gyroXDiv.textContent = "GyroX: " + event.rotationRate.alpha.toFixed(2);
+        gyroX = event.rotationRate.alpha.toFixed(2);
         gyroY.textContent = 'Gyroscope Y: ' + event.rotationRate.beta.toFixed(2);
         gyroZ.textContent = 'Gyroscope Z: ' + event.rotationRate.gamma.toFixed(2);
       }
@@ -201,6 +207,14 @@ function draw() {
 
   // Bounce if on horizontal bound
   if (x > canvas.width - radius || x < radius) {
+    // Vibrate if device will do it (no iOS)
+    if('vibrate' in navigator)
+    {
+        vibrate(10);
+    }
+
+    hitSound.play();
+
     dx *= -1;
     if(x < radius)
     {
@@ -214,6 +228,14 @@ function draw() {
 
   // Bounce if on vertical bound
   if (y > canvas.height - radius || y < radius) {
+    // Vibrate if device will do it
+    if('vibrate' in navigator)
+    {
+        vibrate(10);
+    }
+
+    hitSound.play();
+
     dy *= -1;
     if(y < radius)
     {
