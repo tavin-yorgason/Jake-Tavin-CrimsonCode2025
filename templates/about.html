@@ -116,8 +116,9 @@
     <br>
     <p>Uses gyro sensor to control the direction of the ball</p>
     <p>Uses microphone sound level to change the size of the ball</p>
-    <p>Uses your camera to determine the color of the ball (no iOS, sorry!)</p>
+    <p>Uses your camera to determine the color of the ball (no iOS, because APPLE despises developers >:( )</p>
     <p>Slider options are available in the menu!</p>
+    <p>You can tap to teleport the ball.</p>
   </div>
   <br>
   <div class="center-text">
@@ -138,10 +139,12 @@
 
      <!-- Overlay content -->
       <div class="overlay-content">
-        <a href="{{ url_for('index')}}">Home</a>
-        <a href="{{ url_for('sensors')}}">Sensor Readout</a>
-        <a href="https://github.com/tavin-yorgason/Jake-Tavin-CrimsonCode2025">GitHub</a>
-        <a href="#">Contact</a>
+        <div>
+          <a href="{{ url_for('index')}}">Home</a>
+          <a href="{{ url_for('sensors')}}">Sensor Readout</a>
+          <a href="{{ url_for('about')}}">About</a>
+          <a href="https://github.com/tavin-yorgason/Jake-Tavin-CrimsonCode2025">GitHub</a>
+        </div>
       </div>
   </div>
 

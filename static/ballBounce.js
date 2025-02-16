@@ -13,6 +13,7 @@ const ctx = canvas.getContext("2d");
 var noiseSlider = document.getElementById("noiseScaleSlider");
 var speedSlider = document.getElementById("speedSlider");
 var accelSlider = document.getElementById("accelSlider");
+var sizeSlider = document.getElementById("sizeSlider");
 
 // Update window size
 canvas.width = window.innerWidth;
@@ -319,6 +320,12 @@ function resetBall()
     // Reset accel slider
     accel = 0.5;
     accelSlider.value = .5;
+
+    // Scale ball to screen
+    base_radius = Math.min(canvas.width, canvas.height) * 0.04;
+    sizeSlider.value = base_radius;
+    sizeSlider.min = base_radius - 20;
+    sizeSlider.max = base_radius + 20;
 }
 
 noiseSlider.oninput = function() {
@@ -333,6 +340,15 @@ accelSlider.oninput = function() {
     accel = this.value;
 }
 
+sizeSlider.oninput = function() {
+    // Just update the base radius to match the slider value
+    base_radius = this.value;
+
+    // Optional: Ensure that base_radius stays within valid bounds
+    base_radius = Math.max(base_radius, Math.min(base_radius, Math.min(canvas.width, canvas.height) * 0.2));
+}
+
+resetBall();
 draw();
 
 // Listen for window resize events to update canvas size

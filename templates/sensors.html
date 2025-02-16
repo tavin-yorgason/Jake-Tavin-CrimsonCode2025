@@ -96,6 +96,10 @@
       cursor: pointer;
       border-radius: 5px;
     }
+
+    .center-text {
+      text-align: center;
+    }
   </style>
 
   <meta charset="UTF-8">
@@ -106,20 +110,20 @@
 
 <body>
   <!-- Temp container to show info on screen -->
-  <div class="container mt-4">
+  <div class="center-text">
     <h1>Device Gyroscope Data</h1>
 
     <!-- <div class="data" id="width">Alpha: 0</div>
     <div class="data" id="height">Alpha: 0</div> -->
 
-    <div class="data" id="alpha">Alpha: 0</div>
-    <div class="data" id="beta">Beta: 0</div>
-    <div class="data" id="gamma">Gamma: 0</div>
-    <div class="data" id="gyro-x">Gyroscope X: 0</div>
-    <div class="data" id="gyro-y">Gyroscope Y: 0</div>
-    <div class="data" id="gyro-z">Gyroscope Z: 0</div>
-    <div class="data" id="audio">Volume: 0</div>
-    <div class="data" id="brightness">Brightness: 0</div>
+    <div id="alpha">Alpha: 0</div>
+    <div id="beta">Beta: 0</div>
+    <div id="gamma">Gamma: 0</div>
+    <div id="gyro-x">Gyroscope X: 0</div>
+    <div id="gyro-y">Gyroscope Y: 0</div>
+    <div id="gyro-z">Gyroscope Z: 0</div>
+    <div id="audio">Volume: 0</div>
+    <div id="brightness">Brightness: 0</div>
   </div>
 
   <!-- Bootstrap modal popup for requesting permissions -->
@@ -150,9 +154,12 @@
 
      <!-- Overlay content -->
       <div class="overlay-content">
-        <a href="{{ url_for('index')}}">Home</a>
-        <a href="https://github.com/tavin-yorgason/Jake-Tavin-CrimsonCode2025">GitHub</a>
-        <a href="#">Contact</a>
+        <div>
+          <a href="{{ url_for('index')}}">Home</a>
+          <a href="{{ url_for('sensors')}}">Sensor Readout</a>
+          <a href="{{ url_for('about')}}">About</a>
+          <a href="https://github.com/tavin-yorgason/Jake-Tavin-CrimsonCode2025">GitHub</a>
+        </div>
       </div>
   </div>
 
