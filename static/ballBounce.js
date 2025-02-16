@@ -37,12 +37,13 @@ const circles = [];
 let curColor = "rgb(23, 138, 12)";
 
 let audioLevel = 0;
+let brightness = [0, 0, 0];
 
 let gyroX = 0;
 let gyroY = 0;
 let gyroZ = 0;
 
-var hitSound = new Audio("../sounds/hitSound.wav");
+//var hitSound = new Audio("../sounds/hitSound.wav");
 
 // Listen for permission button click inside modal
 allowButton.addEventListener('click', () => {
@@ -76,10 +77,10 @@ allowButton.addEventListener('click', () => {
     // Listen for gyroscope data
     window.addEventListener('devicemotion', (event) => {
       if (event.rotationRate.alpha !== null) {
-        gyroXDiv.textContent = "GyroX: " + event.rotationRate.alpha.toFixed(2);
+        //gyroXDiv.textContent = "GyroX: " + event.rotationRate.alpha.toFixed(2);
         gyroX = event.rotationRate.alpha.toFixed(2);
-        gyroY.textContent = 'Gyroscope Y: ' + event.rotationRate.beta.toFixed(2);
-        gyroZ.textContent = 'Gyroscope Z: ' + event.rotationRate.gamma.toFixed(2);
+        //gyroY.textContent = 'Gyroscope Y: ' + event.rotationRate.beta.toFixed(2);
+        //gyroZ.textContent = 'Gyroscope Z: ' + event.rotationRate.gamma.toFixed(2);
       }
     });
   
@@ -92,7 +93,7 @@ allowButton.addEventListener('click', () => {
   // Get audio input from user
   function getLocalStream() {
     navigator.mediaDevices
-      .getUserMedia({ video: false, audio: true })
+      .getUserMedia({ video: true, audio: true })
       .then((stream) => {
         // Get audio context
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -133,7 +134,7 @@ allowButton.addEventListener('click', () => {
           }
           audioLevel = sum / bufferLen;
           console.log(audioLevel);
-          audioDiv.textContent = 'Audio level: ' + audioLevel.toFixed(2);
+          //audioDiv.textContent = 'Audio level: ' + audioLevel.toFixed(2);
 
         // Calculate video brightness
 		// Capture an image from the camera
@@ -155,7 +156,7 @@ allowButton.addEventListener('click', () => {
 								  + imageData.data[1]
 								  + imageData.data[2];
 
-			brightnessDiv.textContent = 'Brightness: ' + pixelBrightness;
+			brightness = imageData.data;
 			})
 		  .catch(error => console.log('Error getting image capture: ' + error));
         }, 10 );
@@ -172,7 +173,14 @@ allowButton.addEventListener('click', () => {
       }); 
   }  
 
+function rgbToHex(r, g, b) {
+    return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
+}
+
 function draw() {
+
+  //colorHex = (Normalize(brightness, 0, 765, 0, 4294967295)).toString(16);
+  colorHex = rgbToHex(brightness[0], brightness[1], brightness[2]);
 
   // Calculate new acceleration
   acc_y = Normalize(beta, -45, 45, -.5, .5);
@@ -203,7 +211,7 @@ function draw() {
   for (let i = 0; i < circles.length; i++) {
     ctx.beginPath();
     ctx.arc(circles[i].x, circles[i].y, circles[i].size, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(${circles[i].color.r}, ${circles[i].color.g}, ${circles[i].color.b}, ${circles[i].alpha})`;
+    ctx.fillStyle = `rgba(${circles[i].color[0]}, ${circles[i].color[1]}, ${circles[i].color[2]}, ${circles[i].alpha})`;
     ctx.fill();
     ctx.closePath();
 
@@ -220,23 +228,17 @@ function draw() {
   // Draw the current circle with an outline
   ctx.beginPath();
   ctx.arc(x, y, radius, 0, Math.PI * 2);
-  ctx.fillStyle = curColor;
+  ctx.fillStyle = colorHex;
   ctx.strokeStyle = "#FFFFFF";  // Outline color
   ctx.lineWidth = 2;
   ctx.fill();
   ctx.stroke();
   ctx.closePath();
 
-  // Convert current color to RGB components and default to blue  if parsing fails
-  const colorMatch = curColor.match(/\d+/g) || [0, 149, 221];
-  const colorObj = {
-    r: parseInt(colorMatch[0]),
-    g: parseInt(colorMatch[1]),
-    b: parseInt(colorMatch[2])
-  };
+  newCol = Array.from(brightness);
 
   // Store the current circle's position with full opacity (alpha = 1)
-  circles.push({ x: x, y: y, alpha: 1, color: colorObj, size: radius });
+  circles.push({ x: x, y: y, alpha: 1, color: newCol, size: radius });
 
   // Add the velocities
   x += dx;
@@ -245,7 +247,7 @@ function draw() {
   // Bounce if on horizontal bound
   if (x > canvas.width - radius || x < radius) {
 
-    hitSound.play();
+    //hitSound.play();
 
     dx *= -1;
     if(x < radius)
@@ -261,7 +263,7 @@ function draw() {
   // Bounce if on vertical bound
   if (y > canvas.height - radius || y < radius) {
 
-    hitSound.play();
+    //hitSound.play();
 
     dy *= -1;
     if(y < radius)
