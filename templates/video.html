@@ -51,7 +51,7 @@
 
     .overlay-content {
       position: relative;
-      top: 10%;
+      top: 25%;
       width: 100%;
       text-align: center;
       margin-top: 30px;
@@ -96,6 +96,17 @@
       cursor: pointer;
       border-radius: 5px;
     }
+
+    .center-text {
+      text-align: center;
+    }
+
+    video {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+    }
   </style>
 
   <meta charset="UTF-8">
@@ -105,6 +116,11 @@
 
 
 <body>
+  <!-- Temp container to show info on screen -->
+  <div class="center-text">
+    <a href="#" onclick=test()>TEST</a>
+  </div>
+
   <!-- Bootstrap modal popup for requesting permissions -->
   <div class="modal fade" id="sensorModal" tabindex="-1" role="dialog" aria-labelledby="sensorModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -126,9 +142,6 @@
     </div>
   </div>
 
-  <!-- The canvas on which the ball bounces -->
-  <canvas id="myCanvas"></canvas>
-
   <!-- Overlay with options, credits, reset, etc... -->
   <div id="myNav" class="overlay">
     <!-- Button to close overlay -->
@@ -136,24 +149,6 @@
 
      <!-- Overlay content -->
       <div class="overlay-content">
-        <div class="slidecontainer">
-          <a href="#">Noise scaler</a>
-          <input type="range" min="1" max="10" value="3" class="slider" style="padding:0" id="noiseScaleSlider">
-        </div>
-        <div class="slidecontainer">
-          <a href="#">Maximum speed</a>
-          <input type="range" min="2" max="15" value="5" class="slider" style="padding:0" id="speedSlider">
-        </div>
-        <div class="slidecontainer">
-          <a href="#">Acceleration</a>
-          <input type="range" min="0" max="4.5" value=".5" step=".5" class="slider" style="padding:0" id="accelSlider">
-        </div>
-        <div class="slidecontainer">
-          <a href="#">Base Circle Size</a>
-          <input type="range" min=".1" max="3" value=".5" step="0.5" class="slider" style="padding:0" id="sizeSlider">
-        </div>
-        <a href="#" onclick="closeNav();resetBall()">Reset</a>
-        <br>
         <div>
           <a href="{{ url_for('index')}}">Home</a>
           <a href="{{ url_for('sensors')}}">Sensor Readout</a>
@@ -167,8 +162,8 @@
   <span class="menu-icon" onclick="openNav()">Menu</span>
 
   <!-- Required scripts -->
+  <script src="../static/video.js"></script>
   <script src="../static/popup.js"></script>
-  <script src="../static/ballBounce.js"></script>
   <script src="../static/overlay.js"></script>
 </body>
 </html>

@@ -1,18 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <title>Device Gyroscope Data</title>
-</head>
-<body>
-  <h1>Device Gyroscope Data</h1>
-  <button id="start-button">Allow Access to Sensors</button>
-  <div class="data" id="alpha">Alpha: 0</div>
-  <div class="data" id="beta">Beta: 0</div>
-  <div class="data" id="gamma">Gamma: 0</div>
-  <div class="data" id="gyro-x">Gyroscope X: 0</div>
-  <div class="data" id="gyro-y">Gyroscope Y: 0</div>
-  <div class="data" id="gyro-z">Gyroscope Z: 0</div>
 
-  <script src = "../static/serve.js"></script>
+<head>
+  <!-- Bootstrap Stylesheet -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  
+  <!-- jQuery and Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.bundle.min.js" defer></script>
+
+  <!-- Custom styling -->
+  <style>
+    body {
+      background-color: black;
+      color: white;
+    }
+
+    .modal-content {
+      background-color: black;
+      color: white;
+      border: 2px solid #222;
+    }
+
+    .modal-header, .modal-footer {
+      border-color: #222;
+    }
+
+    .modal-body {
+      background-color: #222;
+    }
+
+    canvas {
+      background: black;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .overlay {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      background-color: black;
+      background-color: rgba(0, 0, 0, 0.9);
+      overflow-x: hidden;
+      transition: 0.5s;
+    }
+
+    .overlay-content {
+      position: relative;
+      top: 10%;
+      width: 100%;
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .overlay a {
+      padding: 8px;
+      text-decoration: none;
+      font-size: 36px;
+      color: gray;
+      display: block;
+      transition: 0.3s;
+    }
+
+    .overlay a:hover, .overlay a:focus {
+      color: whitesmoke;
+    }
+
+    .overlay .closebtn {
+      position: absolute;
+      top: 20px;
+      right: 45px;
+      font-size: 60px;
+    }
+
+    @media screen and (max-height: 450px) {
+      .overlay a {font-size: 20px}
+      .overlay .closebtn {
+        font-size: 40px;
+        top: 15px;
+        right: 35px;
+      }
+    }
+
+    span {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: rgba(94, 94, 94, 0.9);
+      color: white;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  </style>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Device Gyroscope Data With Popup</title>
+</head>
+
+
+<body>
+  <!-- Bootstrap modal popup for requesting permissions -->
+  <div class="modal fade" id="sensorModal" tabindex="-1" role="dialog" aria-labelledby="sensorModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="sensorModalLabel">Sensor Permission</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          This app requires access to your device's motion sensors. Click "Allow" to proceed.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="allow-sensors">Allow</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- The canvas on which the ball bounces -->
+  <canvas id="myCanvas"></canvas>
+
+  <!-- Overlay with options, credits, reset, etc... -->
+  <div id="myNav" class="overlay">
+    <!-- Button to close overlay -->
+     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+
+     <!-- Overlay content -->
+      <div class="overlay-content">
+        <div class="slidecontainer">
+          <a href="#">Noise scaler</a>
+          <input type="range" min="1" max="10" value="3" class="slider" style="padding:0" id="noiseScaleSlider">
+        </div>
+        <div class="slidecontainer">
+          <a href="#">Maximum speed</a>
+          <input type="range" min="2" max="15" value="5" class="slider" style="padding:0" id="speedSlider">
+        </div>
+        <div class="slidecontainer">
+          <a href="#">Acceleration</a>
+          <input type="range" min="0" max="4.5" value=".5" step=".5" class="slider" style="padding:0" id="accelSlider">
+        </div>
+        <div class="slidecontainer">
+          <a href="#">Base Circle Size</a>
+          <input type="range" min=".1" max="3" value=".5" step="0.5" class="slider" style="padding:0" id="sizeSlider">
+        </div>
+        <a href="#" onclick="closeNav();resetBall()">Reset</a>
+        <br>
+        <div>
+          <a href="{{ url_for('index')}}">Home</a>
+          <a href="{{ url_for('sensors')}}">Sensor Readout</a>
+          <a href="{{ url_for('about')}}">About</a>
+          <a href="{{ url_for('video')}}">Video</a>
+          <a href="https://github.com/tavin-yorgason/Jake-Tavin-CrimsonCode2025">GitHub</a>
+        </div>
+      </div>
+  </div>
+
+  <!-- Open nav menu -->
+  <span class="menu-icon" onclick="openNav()">Menu</span>
+
+  <!-- Required scripts -->
+  <script src="../static/popup.js"></script>
+  <script src="../static/ballBounce.js"></script>
+  <script src="../static/overlay.js"></script>
 </body>
 </html>
