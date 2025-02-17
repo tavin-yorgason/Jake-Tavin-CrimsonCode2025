@@ -1,3 +1,4 @@
+// Fields
 const allowButton = document.getElementById('allow-sensors'); // Changed to modal button
 const gyroXDiv = document.getElementById('gyro-x');
 const gyroYDiv = document.getElementById('gyro-y');
@@ -7,13 +8,34 @@ const betaDiv = document.getElementById('beta');
 const gammaDiv = document.getElementById('gamma');
 const audioDiv = document.getElementById('audio');
 
+// Ball rendering canvas
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
+// Sliiders
 var noiseSlider = document.getElementById("noiseScaleSlider");
 var speedSlider = document.getElementById("speedSlider");
 var accelSlider = document.getElementById("accelSlider");
 var sizeSlider = document.getElementById("sizeSlider");
+
+// Video
+var video = document.createElement('video');
+video.style.width= document.width + 'px';
+video.style.height = document.height + 'px';
+video.setAttribute('autoplay', '');
+video.setAttribute('muted', '');
+video.setAttribute('playsinline', '');
+
+var color = [];
+
+var facingMode = "user";
+
+var constraints = {
+    audio: true,
+    video: {
+        facingMode: facingMode
+    }
+}
 
 // Update window size
 canvas.width = window.innerWidth;
@@ -42,7 +64,6 @@ const circles = [];
 let curColor = "rgb(23, 138, 12)";
 
 let audioLevel = 0;
-let brightness = [0, 0, 0];
 
 let gyroX = 0;
 let gyroY = 0;
@@ -98,7 +119,7 @@ function startSensors() {
 // Get audio input from user
 function getLocalStream() {
 	navigator.mediaDevices
-	.getUserMedia({ video: true, audio: true })
+	.getUserMedia(constraints)
 	.then((stream) => {
 		// Get audio context
 		const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -115,53 +136,24 @@ function getLocalStream() {
 		// Connect audio node to analyser
 		audioNode.connect(analyserNode);
 
-		/* ----- Video setup ----- */
-
-		// Get video track
-		const vidTracks = stream.getVideoTracks();
-		var videoTrack;
-		if( vidTracks.length === 0 )
-		{
-			console.log("No valid video source");
-		}
-		else
-		{
-			videoTrack = vidTracks[0];
-		}
+		// Set up video
+		video.srcObject = stream;
+		document.body.appendChild(video);
 
 		// Get relative volume
 		setInterval( function() {
-		analyserNode.getByteFrequencyData(buffer);
+			analyserNode.getByteFrequencyData(buffer);
 
-		// Calculate volume
-		let sum = 0;
+			// Calculate volume
+			let sum = 0;
 
-		for (let i = 0; i < bufferLen; i++) {
-			sum += buffer[i];
-		}
-		audioLevel = sum / bufferLen;
-		//audioDiv.textContent = 'Audio level: ' + audioLevel.toFixed(2);
+			for (let i = 0; i < bufferLen; i++) {
+				sum += buffer[i];
+			}
+			audioLevel = sum / bufferLen;
+			//audioDiv.textContent = 'Audio level: ' + audioLevel.toFixed(2);
 
-		// Calculate video brightness
-		// Capture an image from the camera
-		const imageCapture = new ImageCapture(videoTrack);
-
-		// Convert it to a bitmap
-		imageCapture.grabFrame()
-		.then(imageBitmap =>
-		{
-			// Render it to an offscreen canvas
-			const offscreenCanvas = new OffscreenCanvas(imageBitmap.width,
-												imageBitmap.height);
-			const ctx = offscreenCanvas.getContext('2d');
-			ctx.drawImage(imageBitmap, 0, 0);
-
-			// Get the rgb values from the top left pixel
-			const imageData = ctx.getImageData(offscreenCanvas.width/2,
-										offscreenCanvas.height/2, 1, 1);
-			brightness = imageData.data;
-		})
-		.catch(error => console.log('Error getting image capture: ' + error));
+			GetColorFromCamera();
 		}, 10 );
 
 		// Check for video tracks
@@ -171,6 +163,25 @@ function getLocalStream() {
 	}); 
 }  
 
+async function GetColorFromCamera() {
+    let frame = new VideoFrame(video);
+    let height = frame.codedHeight;
+    let width = frame.codedWidth;
+
+    let buffer = new Uint8Array(frame.allocationSize({format: "RGBA"}));
+    await frame.copyTo(buffer, {format: "RGBA"});
+
+    // Middle pizel is 2 * width * heiight;
+    let index = 0
+    let r = buffer[index];
+    let g = buffer[index + 1];
+    let b = buffer[index + 2];
+
+    color = [r, g, b];
+
+    frame.close();
+}
+
 function rgbToHex(r, g, b) {
     return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
 }
@@ -179,7 +190,7 @@ let noiseScaling = 3.0;
 let accel = .5;
 
 function draw() {
-	colorHex = rgbToHex(brightness[0], brightness[1], brightness[2]);
+	colorHex = rgbToHex(color[0], color[1], color[2]);
 
 	// Calculate new acceleration
 	acc_y = Normalize(beta, -45, 45, -1 * accel, accel);
@@ -234,7 +245,7 @@ function draw() {
 	ctx.stroke();
 	ctx.closePath();
 
-	newCol = Array.from(brightness);
+	newCol = Array.from(color);
 
 	// Store the current circle's position with full opacity (alpha = 1)
 	circles.push({ x: x, y: y, alpha: 1, color: newCol, size: radius });

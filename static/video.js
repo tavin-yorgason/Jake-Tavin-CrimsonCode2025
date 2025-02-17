@@ -29,9 +29,6 @@ async function test() {
     let height = frame.codedHeight;
     let width = frame.codedWidth;
 
-    let midx = Math.floor(width / 2);
-    let midy = Math.floor(height / 2);
-
     let buffer = new Uint8Array(frame.allocationSize({format: "RGBA"}));
     await frame.copyTo(buffer, {format: "RGBA"});
 
