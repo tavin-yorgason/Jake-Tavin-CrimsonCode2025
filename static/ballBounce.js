@@ -17,6 +17,7 @@ var noiseSlider = document.getElementById("noiseScaleSlider");
 var speedSlider = document.getElementById("speedSlider");
 var accelSlider = document.getElementById("accelSlider");
 var sizeSlider = document.getElementById("sizeSlider");
+var fadeSlider = document.getElementById("fadeSlider");
 
 // Video
 var video = document.createElement('video');
@@ -188,6 +189,7 @@ function rgbToHex(r, g, b) {
 
 let noiseScaling = 3.0;
 let accel = .5;
+let numBalls = 1 / 1000;
 
 function draw() {
 	colorHex = rgbToHex(color[0], color[1], color[2]);
@@ -226,7 +228,7 @@ function draw() {
 		ctx.closePath();
 
 		// Fade the circle gradually
-		circles[i].alpha -= 0.001;
+		circles[i].alpha -= numBalls;
 
 		// Remove circle if it's fully faded out
 		if (circles[i].alpha <= 0) {
@@ -330,6 +332,10 @@ function resetBall()
     sizeSlider.value = base_radius;
     sizeSlider.min = base_radius - 20;
     sizeSlider.max = base_radius + 20;
+
+	// reset fade
+	numBalls = 1 / 1000;
+	fadeSlider.value = 1000;
 }
 
 noiseSlider.oninput = function() {
@@ -350,6 +356,10 @@ sizeSlider.oninput = function() {
 
     // Optional: Ensure that base_radius stays within valid bounds
     base_radius = Math.max(base_radius, Math.min(base_radius, Math.min(canvas.width, canvas.height) * 0.2));
+}
+
+fadeSlider.oninput = function() {
+	numBalls = 1 / this.value;
 }
 
 resetBall();
